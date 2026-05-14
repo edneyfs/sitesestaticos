@@ -157,11 +157,6 @@ a:hover{text-decoration:underline}
       <div class="sub-title">Campos Comuns (presentes em todos os layouts)</div>
       <table class="field-table"><thead><tr><th>Campo</th><th>Tipo</th><th>Descrição</th><th>Valores</th></tr></thead><tbody id="common-fields"></tbody></table>
 
-      <div class="sub-title">Campos de Controle (gerenciados pelo sistema — NÃO enviar)</div>
-      <p style="font-size:.85rem;color:var(--muted);margin-bottom:.5rem">Os campos abaixo são gerenciados internamente. Se enviados, serão ignorados/sobrescritos.</p>
-      <div style="font-family:var(--mono);font-size:.8rem;color:var(--muted);background:var(--surface2);padding:.8rem 1rem;border-radius:8px">
-        procDate, registrationErrorDescription, executionKey, processStatus1..10, procDate1..10, message1..10
-      </div>
     </div>
   </div>
 
@@ -224,8 +219,6 @@ document.getElementById('layouts').innerHTML = LAYOUTS.map(l => {
     : '';
 
   const overviewHtml = `<div class="overview-grid">
-    <div class="ov-item"><div class="ov-label">API Equivalente</div><div class="ov-value">${l.api}</div></div>
-    <div class="ov-item"><div class="ov-label">Tabela P2K</div><div class="ov-value">${l.table}</div></div>
     <div class="ov-item"><div class="ov-label">Chave Primária</div><div class="ov-value">${l.pk}</div></div>
     <div class="ov-item"><div class="ov-label">Arquivo</div><div class="ov-value">${l.id}_*.json</div></div>
   </div>`;
@@ -246,7 +239,7 @@ document.getElementById('layouts').innerHTML = LAYOUTS.map(l => {
     </div>
     <div class="section-body">
       ${prereqHtml}${overviewHtml}${fieldsHtml}${optHtml}
-      <p style="font-size:.8rem;color:var(--muted);margin-bottom:1rem">Além dos campos acima, incluir os <strong>campos comuns</strong> (operationType, registrationStatus, inclusionDate) em cada registro.</p>
+      <p style="font-size:.8rem;color:var(--muted);margin-bottom:1rem">Além dos campos acima, incluir os <strong>campos comuns</strong> (operationType, inclusionDate) em cada registro.</p>
       ${exampleHtml}${rulesHtml}
     </div>
   </div>`;

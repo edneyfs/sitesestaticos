@@ -1,13 +1,11 @@
 const COMMON_FIELDS = [
   {n:"operationType",t:"string",r:true,d:"Tipo da operação",vals:{"I":"Inclusão/Alteração","E":"Exclusão"}},
-  {n:"registrationStatus",t:"string",r:true,d:"Status do registro. Enviar sempre \"NP\"",vals:{"NP":"Não Processado","PR":"Processado","EP":"Em Processamento","ER":"Processado com Erro"}},
   {n:"inclusionDate",t:"datetime",r:true,d:"Data/hora de inclusão. Formato: YYYY-MM-DD HH:MM:SS",ex:"2026-05-12 15:00:00"}
 ];
 
 const LAYOUTS = [
   {
     id:"category-levels", order:1, title:"Níveis Mercadológicos",
-    api:"POST /category-level/", table:"P2K_NIV_MERC",
     desc:"Define a estrutura hierárquica dos níveis mercadológicos que organizam as categorias de produtos.",
     prereqs:[], pk:"level",
     fields:[
@@ -17,8 +15,8 @@ const LAYOUTS = [
       {n:"sectionIndicator",t:"string",r:false,d:"Indicador do nível da seção"}
     ],
     example:[
-      {"level":1,"levelDescription":"Departamento","digitsNumber":2,"operationType":"I","registrationStatus":"NP","inclusionDate":"2026-05-12 15:00:00"},
-      {"level":2,"levelDescription":"Setor","digitsNumber":2,"operationType":"I","registrationStatus":"NP","inclusionDate":"2026-05-12 15:00:00"}
+      {"level":1,"levelDescription":"Departamento","digitsNumber":2,"operationType":"I","inclusionDate":"2026-05-12 15:00:00"},
+      {"level":2,"levelDescription":"Setor","digitsNumber":2,"operationType":"I","inclusionDate":"2026-05-12 15:00:00"}
     ],
     rules:[
       "O campo \"level\" é a chave primária do nível mercadológico.",
@@ -28,7 +26,6 @@ const LAYOUTS = [
   },
   {
     id:"categories", order:2, title:"Categorias (Mercadológicos)",
-    api:"POST /category/", table:"P2K_CAB_MERC",
     desc:"Define as categorias utilizadas para classificar os produtos, seguindo a hierarquia dos níveis mercadológicos.",
     prereqs:["category-levels"], pk:"marketCode",
     fields:[
@@ -41,8 +38,8 @@ const LAYOUTS = [
       {n:"allowCommission",t:"string",r:true,d:"Categoria comissionada",vals:{"S":"Sim","N":"Não"}}
     ],
     example:[
-      {"marketCode":"10","compactDescription":"TEL MOVEL","fullDescription":"Telefonia Móvel","markup":0,"extraPoints":0,"marketCodeSup":"","allowCommission":"S","operationType":"I","registrationStatus":"NP","inclusionDate":"2026-05-12 15:00:00"},
-      {"marketCode":"1001","compactDescription":"SMARTPHONES","fullDescription":"Smartphones e Celulares","markup":0,"extraPoints":0,"marketCodeSup":"10","allowCommission":"S","operationType":"I","registrationStatus":"NP","inclusionDate":"2026-05-12 15:00:00"}
+      {"marketCode":"10","compactDescription":"TEL MOVEL","fullDescription":"Telefonia Móvel","markup":0,"extraPoints":0,"marketCodeSup":"","allowCommission":"S","operationType":"I","inclusionDate":"2026-05-12 15:00:00"},
+      {"marketCode":"1001","compactDescription":"SMARTPHONES","fullDescription":"Smartphones e Celulares","markup":0,"extraPoints":0,"marketCodeSup":"10","allowCommission":"S","operationType":"I","inclusionDate":"2026-05-12 15:00:00"}
     ],
     rules:[
       "\"marketCode\" é a chave primária da categoria.",
@@ -53,7 +50,6 @@ const LAYOUTS = [
   },
   {
     id:"taxes", order:3, title:"Percentuais de Impostos",
-    api:"POST /tax/", table:"P2K_PERC_IMP",
     desc:"Define os percentuais de impostos utilizados no cálculo tributário das mercadorias.",
     prereqs:[], pk:"taxType + taxCode",
     fields:[
@@ -62,9 +58,9 @@ const LAYOUTS = [
       {n:"taxPercentage",t:"number",r:true,d:"Percentual do imposto",ex:"18, 7.6, 1.65"}
     ],
     example:[
-      {"taxType":"1","taxCode":1,"taxPercentage":18,"operationType":"I","registrationStatus":"NP","inclusionDate":"2026-05-12 15:00:00"},
-      {"taxType":"3","taxCode":11,"taxPercentage":1.65,"operationType":"I","registrationStatus":"NP","inclusionDate":"2026-05-12 15:00:00"},
-      {"taxType":"4","taxCode":13,"taxPercentage":7.6,"operationType":"I","registrationStatus":"NP","inclusionDate":"2026-05-12 15:00:00"}
+      {"taxType":"1","taxCode":1,"taxPercentage":18,"operationType":"I","inclusionDate":"2026-05-12 15:00:00"},
+      {"taxType":"3","taxCode":11,"taxPercentage":1.65,"operationType":"I","inclusionDate":"2026-05-12 15:00:00"},
+      {"taxType":"4","taxCode":13,"taxPercentage":7.6,"operationType":"I","inclusionDate":"2026-05-12 15:00:00"}
     ],
     rules:[
       "A chave primária é a combinação de taxType + taxCode.",
@@ -75,7 +71,6 @@ const LAYOUTS = [
   },
   {
     id:"products", order:4, title:"Cadastro de Produtos",
-    api:"POST /product/", table:"P2K_CAB_PRODUTO",
     desc:"Define o cadastro básico dos produtos: descrição, código de barras principal, classificação fiscal (NCM), mercadológico, embalagem e referências PIS/COFINS.",
     prereqs:["category-levels","categories","taxes"], pk:"internalCode",
     fields:[
@@ -107,7 +102,7 @@ const LAYOUTS = [
       {n:"netWeight",t:"string",d:"Peso líquido (kg)"}
     ],
     example:[
-      {"internalCode":100001,"verifDigit":0,"externalCode":"VIVO-100001","fullDescription":"SMARTPHONE SAMSUNG GALAXY A55 5G 128GB AZUL","compactDescription":"SAMSUNG GALAXY A55 5G","marketingCode":"1001001","origin":"0","autCodeType":"1","automationCode":7891010571313,"indGtin":"S","elementType":"0","ncmCode":85171400,"salesPackaging":"UN","unitContent":"NH","purchasePack":"UN","productType":"01","pisCode":11,"cofinsCode":13,"indImeiControl":"S","uniqueIdentifierType":2,"brandName":"Samsung","operationType":"I","registrationStatus":"NP","inclusionDate":"2026-05-12 15:00:00"}
+      {"internalCode":100001,"verifDigit":0,"externalCode":"VIVO-100001","fullDescription":"SMARTPHONE SAMSUNG GALAXY A55 5G 128GB AZUL","compactDescription":"SAMSUNG GALAXY A55 5G","marketingCode":"1001001","origin":"0","autCodeType":"1","automationCode":7891010571313,"indGtin":"S","elementType":"0","ncmCode":85171400,"salesPackaging":"UN","unitContent":"NH","purchasePack":"UN","productType":"01","pisCode":11,"cofinsCode":13,"indImeiControl":"S","uniqueIdentifierType":2,"brandName":"Samsung","operationType":"I","inclusionDate":"2026-05-12 15:00:00"}
     ],
     rules:[
       "\"internalCode\" é a chave primária do produto.",
@@ -119,7 +114,6 @@ const LAYOUTS = [
   },
   {
     id:"product-barcodes", order:5, title:"Códigos de Barras Adicionais",
-    api:"POST /product-barcode/", table:"P2K_AUT_PRODUTO",
     desc:"Cadastra códigos de barras adicionais para produtos que possuem múltiplos códigos (embalagens diferentes, códigos internos, migração).",
     prereqs:["products"], pk:"automationCode + productCode",
     fields:[
@@ -132,7 +126,7 @@ const LAYOUTS = [
       {n:"indGtin",t:"string",r:true,d:"Código GTIN válido?",vals:{"S":"Sim","N":"Não"}}
     ],
     example:[
-      {"automationCode":17891010571310,"productCode":100001,"verifDigit":0,"autCodeType":"6","salesPackaging":"CX","salesPackagingQuant":6,"indGtin":"S","operationType":"I","registrationStatus":"NP","inclusionDate":"2026-05-12 15:00:00"}
+      {"automationCode":17891010571310,"productCode":100001,"verifDigit":0,"autCodeType":"6","salesPackaging":"CX","salesPackagingQuant":6,"indGtin":"S","operationType":"I","inclusionDate":"2026-05-12 15:00:00"}
     ],
     rules:[
       "Chave primária: automationCode + productCode.",
@@ -144,7 +138,6 @@ const LAYOUTS = [
   },
   {
     id:"product-stores", order:6, title:"Produto × Loja (Habilitação e Tributação)",
-    api:"POST /product-store/", table:"P2K_LJ_PRODUTO",
     desc:"Associa um produto a uma loja específica, definindo tributação, situação, preços e indicadores fiscais. Sem este cadastro, o produto NÃO estará disponível no PDV.",
     prereqs:["products","taxes"], pk:"storeCode + productCode",
     fields:[
@@ -167,7 +160,7 @@ const LAYOUTS = [
       {n:"flagPromotion",t:"string",d:"Indicador de promoção",vals:{"0":"Sem promoção","1":"Em promoção","2":"Retirar promoção"}}
     ],
     example:[
-      {"storeCode":1071,"productCode":100001,"verifyingDigit":0,"taxationType":"T","taxationCode":1,"pisExemption":"0","cofinsExemption":"0","productSituation":"N","cst":0,"companyCode":"00001","aliqFcpValue":2,"practicedPrice":1899.99,"costPrice":1200.00,"operationType":"I","registrationStatus":"NP","inclusionDate":"2026-05-12 15:00:00"}
+      {"storeCode":1071,"productCode":100001,"verifyingDigit":0,"taxationType":"T","taxationCode":1,"pisExemption":"0","cofinsExemption":"0","productSituation":"N","cst":0,"companyCode":"00001","aliqFcpValue":2,"practicedPrice":1899.99,"costPrice":1200.00,"operationType":"I","inclusionDate":"2026-05-12 15:00:00"}
     ],
     rules:[
       "Chave primária: storeCode + productCode.",
@@ -179,7 +172,6 @@ const LAYOUTS = [
   },
   {
     id:"product-price-validities", order:7, title:"Vigência de Preços",
-    api:"POST /product-price-validity/", table:"P2K_VIGENCIA_PRECO",
     desc:"Define preços com vigência (data início/fim) para cada produto em cada loja. Controla preço normal, promocional, de concorrência e diferenciado por parceiro.",
     prereqs:["products","product-stores"], pk:"internalCode + storeCode + effectiveStartDate + priceType + partnerCode",
     fields:[
@@ -195,7 +187,7 @@ const LAYOUTS = [
       {n:"effectiveReasonCode",t:"integer",r:false,d:"Código de motivo da vigência (informativo)"}
     ],
     example:[
-      {"internalCode":100001,"storeCode":1071,"effectiveStartDate":"2026-05-12 00:00","effectiveEndDate":"2099-12-31 00:00","externalCode":"VIVO-100001","price":1899.99,"automationCode":"7891010571313","priceType":"1","partnerCode":0,"operationType":"I","registrationStatus":"NP","inclusionDate":"2026-05-12 15:00:00"}
+      {"internalCode":100001,"storeCode":1071,"effectiveStartDate":"2026-05-12 00:00","effectiveEndDate":"2099-12-31 00:00","externalCode":"VIVO-100001","price":1899.99,"automationCode":"7891010571313","priceType":"1","partnerCode":0,"operationType":"I","inclusionDate":"2026-05-12 15:00:00"}
     ],
     rules:[
       "Chave primária composta: internalCode + storeCode + effectiveStartDate + priceType + partnerCode.",
