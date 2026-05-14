@@ -7,7 +7,7 @@ const LAYOUTS = [
   {
     id:"category-levels", order:1, title:"Níveis Mercadológicos",
     desc:"Define a estrutura hierárquica dos níveis mercadológicos que organizam as categorias de produtos.",
-    prereqs:[], pk:"level",
+    dependency:"Sem dependência", pk:"level",
     fields:[
       {n:"level",t:"integer",r:true,d:"Número do nível mercadológico",ex:"1, 2, 3, 4"},
       {n:"levelDescription",t:"string",r:true,d:"Descrição do nível",ex:"Departamento, Setor, Categoria"},
@@ -27,7 +27,7 @@ const LAYOUTS = [
   {
     id:"categories", order:2, title:"Categorias (Mercadológicos)",
     desc:"Define as categorias utilizadas para classificar os produtos, seguindo a hierarquia dos níveis mercadológicos.",
-    prereqs:["category-levels"], pk:"marketCode",
+    dependency:"Níveis Mercadológicos", pk:"marketCode",
     fields:[
       {n:"marketCode",t:"string",r:true,d:"Código do mercadológico (chave primária)",ex:"10, 1001, 1001001"},
       {n:"compactDescription",t:"string",r:true,d:"Descrição compacta (PDV/cupom fiscal)",ex:"SMARTPHONES"},
@@ -51,7 +51,7 @@ const LAYOUTS = [
   {
     id:"taxes", order:3, title:"Percentuais de Impostos",
     desc:"Define os percentuais de impostos utilizados no cálculo tributário das mercadorias.",
-    prereqs:[], pk:"taxType + taxCode",
+    dependency:"Sem dependência", pk:"taxType + taxCode",
     fields:[
       {n:"taxType",t:"string",r:true,d:"Tipo do imposto",vals:{"1":"ICMS","2":"ISS","3":"PIS","4":"COFINS","5":"ICMS Reduzido","6":"Redução (% redução de base)","7":"FCP","8":"% redução base efetiva","9":"ICMS efetiva","10":"ICMS Desoneração"}},
       {n:"taxCode",t:"number",r:true,d:"Código sequencial do percentual. Forma o identificador Tn (ex: taxCode=1 → T1)",ex:"1, 11, 13, 20"},
@@ -72,7 +72,7 @@ const LAYOUTS = [
   {
     id:"products", order:4, title:"Cadastro de Produtos",
     desc:"Define o cadastro básico dos produtos: descrição, código de barras principal, classificação fiscal (NCM), mercadológico, embalagem e referências PIS/COFINS.",
-    prereqs:["category-levels","categories","taxes"], pk:"internalCode",
+    dependency:"Categorias (Mercadológicos) e Percentuais de Impostos", pk:"internalCode",
     fields:[
       {n:"internalCode",t:"integer",r:true,d:"Código interno do produto (chave primária)",ex:"100001"},
       {n:"verifDigit",t:"integer",r:true,d:"Dígito verificador (módulo 11)",ex:"0"},
@@ -115,7 +115,7 @@ const LAYOUTS = [
   {
     id:"product-barcodes", order:5, title:"Códigos de Barras Adicionais",
     desc:"Cadastra códigos de barras adicionais para produtos que possuem múltiplos códigos (embalagens diferentes, códigos internos, migração).",
-    prereqs:["products"], pk:"automationCode + productCode",
+    dependency:"Cadastro de Produtos", pk:"automationCode + productCode",
     fields:[
       {n:"automationCode",t:"integer",r:true,d:"Código de barras/automação (chave primária com productCode)",ex:"17891010571310"},
       {n:"productCode",t:"integer",r:true,d:"Código interno do produto. Ref: products.internalCode",ex:"100001"},
@@ -139,7 +139,7 @@ const LAYOUTS = [
   {
     id:"product-stores", order:6, title:"Produto × Loja (Habilitação e Tributação)",
     desc:"Associa um produto a uma loja específica, definindo tributação, situação, preços e indicadores fiscais. Sem este cadastro, o produto NÃO estará disponível no PDV.",
-    prereqs:["products","taxes"], pk:"storeCode + productCode",
+    dependency:"Cadastro de Produtos e Percentuais de Impostos", pk:"storeCode + productCode",
     fields:[
       {n:"storeCode",t:"number",r:true,d:"Código da loja (chave primária com productCode)",ex:"1071"},
       {n:"productCode",t:"number",r:true,d:"Código interno do produto. Ref: products.internalCode",ex:"100001"},
@@ -173,7 +173,7 @@ const LAYOUTS = [
   {
     id:"product-price-validities", order:7, title:"Vigência de Preços",
     desc:"Define preços com vigência (data início/fim) para cada produto em cada loja. Controla preço normal, promocional, de concorrência e diferenciado por parceiro.",
-    prereqs:["products","product-stores"], pk:"internalCode + storeCode + effectiveStartDate + priceType + partnerCode",
+    dependency:"Cadastro de Produtos e Produto × Loja", pk:"internalCode + storeCode + effectiveStartDate + priceType + partnerCode",
     fields:[
       {n:"internalCode",t:"integer",r:true,d:"Código interno do produto. Ref: products",ex:"100001"},
       {n:"storeCode",t:"integer",r:true,d:"Código da loja",ex:"1071"},

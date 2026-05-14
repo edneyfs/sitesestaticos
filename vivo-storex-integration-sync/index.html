@@ -124,7 +124,6 @@ a:hover{text-decoration:underline}
   <div style="margin-top:1rem">
     <span class="badge badge-info">7 Layouts</span>
     <span class="badge badge-info">JSON / JSONL</span>
-    <span class="badge badge-warn">Ordem de execução obrigatória</span>
   </div>
 </div>
 
@@ -137,22 +136,21 @@ a:hover{text-decoration:underline}
     <div class="section-body">
       <div class="sub-title">Nomenclatura do Arquivo</div>
       <div class="naming-box">
-        <p>Cada arquivo deve seguir o padrão: <code>&lt;layout&gt;_&lt;timestamp&gt;.json</code></p>
-        <p style="margin-top:.5rem;font-size:.85rem;color:var(--muted)">Onde <code>&lt;layout&gt;</code> é o nome do layout (plural) e <code>&lt;timestamp&gt;</code> segue o formato <code>yyyyMMddHHmmssSSS</code> (17 dígitos).</p>
-        <p style="margin-top:.5rem;font-size:.85rem;color:var(--muted)">Formatos suportados: <code>.json</code> (array), <code>.jsonl</code> (uma linha por registro), <code>.json.gz</code> e <code>.jsonl.gz</code> (comprimidos).</p>
-        <p style="margin-top:.8rem;font-size:.82rem">Exemplos: <code>categories_20260514114401000.json</code>, <code>products_20260514114403000.jsonl.gz</code></p>
+        <p>Cada arquivo deve seguir o padrão: <code>&lt;layout&gt;_&lt;timestamp&gt;.json.gz</code></p>
+        <p style="margin-top:.5rem;font-size:.85rem;color:var(--muted)">Onde <code>&lt;layout&gt;</code> é o nome do layout (em plural) e <code>&lt;timestamp&gt;</code> é um identificador de 17 dígitos no formato:</p>
+        <ul style="margin: 0.5rem 0 0 1.5rem; font-size: 0.82rem; color: var(--muted)">
+          <li><b>yyyy</b>: 4-digit year (ex: 2026)</li>
+          <li><b>MM</b>: 2-digit month (01–12)</li>
+          <li><b>dd</b>: 2-digit day (01–31)</li>
+          <li><b>HH</b>: 2-digit hour in 24-hour format (00–23)</li>
+          <li><b>mm</b>: 2-digit minutes (00–59)</li>
+          <li><b>ss</b>: 2-digit seconds (00–59)</li>
+          <li><b>SSS</b>: 3-digit milliseconds (000–999)</li>
+        </ul>
+        <p style="margin-top:.8rem;font-size:.85rem;color:var(--muted)">Formatos suportados: <b>.json.gz</b> (JSON comprimido).</p>
+        <p style="margin-top:.8rem;font-size:.82rem">Exemplos: <code>categories_20260514114401000.json.gz</code>, <code>products_20260514114403000.json.gz</code></p>
       </div>
 
-      <div class="sub-title">Estrutura de Pastas (S3)</div>
-      <div class="code-block"><pre>bucket/
-├── incoming/     ← Depositar arquivos aqui
-├── processing/   ← Em processamento (gerenciado pelo sistema)
-├── processed/    ← Processados com sucesso
-├── error/        ← Processados com erro
-└── reports/      ← Relatórios JSON de cada processamento</pre></div>
-
-      <div class="sub-title">Ordem de Execução</div>
-      <div class="flow-steps" id="flow"></div>
 
       <div class="sub-title">Campos Comuns (presentes em todos os layouts)</div>
       <table class="field-table"><thead><tr><th>Campo</th><th>Tipo</th><th>Descrição</th><th>Valores</th></tr></thead><tbody id="common-fields"></tbody></table>
@@ -199,10 +197,6 @@ const obs = new IntersectionObserver(entries=>{
 
 document.querySelectorAll('[id^="sec-"]').forEach(el=>obs.observe(el));
 
-// Flow
-document.getElementById('flow').innerHTML = LAYOUTS.map((l,i) =>
-  `<div class="flow-step"><span class="fnum">Etapa ${l.order}</span>${l.id}</div>${i<LAYOUTS.length-1?'<span class="flow-arrow">→</span>':''}`
-).join('');
 
 // Common fields
 document.getElementById('common-fields').innerHTML = COMMON_FIELDS.map(f => {
@@ -214,13 +208,11 @@ document.getElementById('common-fields').innerHTML = COMMON_FIELDS.map(f => {
 
 // Layouts
 document.getElementById('layouts').innerHTML = LAYOUTS.map(l => {
-  const prereqHtml = l.prereqs.length
-    ? `<div class="prereq-list">${l.prereqs.map(p=>`<span class="prereq-chip">Requer: ${p}</span>`).join('')}</div>`
-    : '';
 
   const overviewHtml = `<div class="overview-grid">
     <div class="ov-item"><div class="ov-label">Chave Primária</div><div class="ov-value">${l.pk}</div></div>
-    <div class="ov-item"><div class="ov-label">Arquivo</div><div class="ov-value">${l.id}_*.json</div></div>
+    <div class="ov-item"><div class="ov-label">Arquivo</div><div class="ov-value">${l.id}_*.json.gz</div></div>
+    <div class="ov-item"><div class="ov-label">Dependência Cadastral</div><div class="ov-value" style="color:var(--yellow)">${l.dependency}</div></div>
   </div>`;
 
   const fieldsHtml = renderFieldTable('Campos Obrigatórios para Envio', l.fields, true);
@@ -238,7 +230,7 @@ document.getElementById('layouts').innerHTML = LAYOUTS.map(l => {
       <div><h2>${l.title}</h2><div class="meta">${l.desc}</div></div>
     </div>
     <div class="section-body">
-      ${prereqHtml}${overviewHtml}${fieldsHtml}${optHtml}
+      ${overviewHtml}${fieldsHtml}${optHtml}
       <p style="font-size:.8rem;color:var(--muted);margin-bottom:1rem">Além dos campos acima, incluir os <strong>campos comuns</strong> (operationType, inclusionDate) em cada registro.</p>
       ${exampleHtml}${rulesHtml}
     </div>
