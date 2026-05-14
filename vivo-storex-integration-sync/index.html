@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Integração por Arquivo — Layouts de Cadastro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0e1a;--surface:#111827;--surface2:#1a2236;--border:#1e293b;
+  --text:#e2e8f0;--muted:#94a3b8;--accent:#38bdf8;--accent2:#818cf8;
+  --green:#34d399;--red:#f87171;--yellow:#fbbf24;--orange:#fb923c;
+  --radius:10px;--font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* Header */
+.hero{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#0f172a 100%);border-bottom:1px solid var(--border);padding:3rem 2rem;text-align:center}
+.hero h1{font-size:2.2rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.5rem}
+.hero p{color:var(--muted);font-size:1.05rem;max-width:700px;margin:0 auto}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:600;margin:0 3px}
+.badge-info{background:rgba(56,189,248,.15);color:var(--accent)}
+.badge-warn{background:rgba(251,191,36,.15);color:var(--yellow)}
+
+/* Layout */
+.container{max-width:1100px;margin:0 auto;padding:2rem 1.5rem}
+
+/* Nav */
+.nav-bar{position:sticky;top:0;z-index:100;background:rgba(10,14,26,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:.6rem 0}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;gap:.5rem;padding:0 1.5rem;overflow-x:auto}
+.nav-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.8rem;font-family:var(--font);cursor:pointer;white-space:nowrap;transition:all .2s}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+.nav-btn.active{background:rgba(56,189,248,.12);border-color:var(--accent);color:var(--accent);font-weight:600}
+
+/* Cards */
+.section-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:1.5rem;overflow:hidden}
+.section-header{padding:1.2rem 1.5rem;display:flex;align-items:center;gap:1rem;border-bottom:1px solid var(--border)}
+.step-badge{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;flex-shrink:0}
+.section-header h2{font-size:1.15rem;font-weight:700}
+.section-header .meta{font-size:.78rem;color:var(--muted);margin-top:2px}
+.section-body{padding:1.5rem}
+
+/* Overview box */
+.overview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-bottom:1.5rem}
+.ov-item{background:var(--surface2);padding:.8rem 1rem;border-radius:8px;border:1px solid var(--border)}
+.ov-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:2px}
+.ov-value{font-size:.9rem;font-weight:600;font-family:var(--mono)}
+
+/* Prereqs */
+.prereq-list{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
+.prereq-chip{padding:3px 10px;border-radius:6px;font-size:.75rem;background:rgba(251,191,36,.1);color:var(--yellow);border:1px solid rgba(251,191,36,.2)}
+
+/* Tables */
+.field-table{width:100%;border-collapse:collapse;font-size:.85rem;margin-bottom:1.5rem}
+.field-table th{text-align:left;padding:8px 12px;background:var(--surface2);color:var(--muted);font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--border)}
+.field-table td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+.field-table tr:last-child td{border-bottom:none}
+.field-table tr:hover td{background:rgba(56,189,248,.03)}
+.fname{font-family:var(--mono);font-weight:500;color:var(--accent);font-size:.82rem}
+.ftype{font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+.freq{font-size:.7rem;font-weight:600;padding:2px 6px;border-radius:4px}
+.freq-y{background:rgba(52,211,153,.12);color:var(--green)}
+.freq-n{background:rgba(148,163,184,.1);color:var(--muted)}
+.val-list{margin:4px 0 0;padding:0;list-style:none;font-size:.78rem}
+.val-list li{padding:1px 0;color:var(--muted)}
+.val-list code{background:var(--surface2);padding:1px 5px;border-radius:3px;font-family:var(--mono);color:var(--text);font-size:.76rem}
+
+/* Sub headers */
+.sub-title{font-size:.9rem;font-weight:700;margin:1.2rem 0 .6rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.5rem}
+.sub-title svg{width:16px;height:16px;color:var(--accent)}
+
+/* Code blocks */
+.code-block{background:#0d1117;border:1px solid var(--border);border-radius:8px;padding:1rem 1.2rem;overflow-x:auto;margin-bottom:1rem;position:relative}
+.code-block pre{font-family:var(--mono);font-size:.8rem;line-height:1.7;color:#c9d1d9;white-space:pre;margin:0}
+.code-block .copy-btn{position:absolute;top:8px;right:8px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:6px;font-size:.72rem;cursor:pointer;font-family:var(--font);transition:all .2s}
+.code-block .copy-btn:hover{color:var(--accent);border-color:var(--accent)}
+
+/* Rules */
+.rules-list{list-style:none;padding:0}
+.rules-list li{padding:6px 0 6px 20px;position:relative;font-size:.85rem;color:var(--muted)}
+.rules-list li::before{content:"";position:absolute;left:0;top:13px;width:8px;height:8px;border-radius:50%;background:var(--accent2)}
+
+/* Flow */
+.flow-steps{display:flex;gap:0;align-items:center;flex-wrap:wrap;margin:1.5rem 0}
+.flow-step{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.6rem 1rem;font-size:.82rem;font-weight:500;position:relative;text-align:center;min-width:120px}
+.flow-step .fnum{font-size:.65rem;color:var(--accent);display:block;margin-bottom:2px}
+.flow-arrow{color:var(--border);font-size:1.2rem;padding:0 4px}
+
+/* File naming */
+.naming-box{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1.2rem 1.5rem;margin:1rem 0}
+.naming-box code{font-family:var(--mono);background:rgba(56,189,248,.1);padding:2px 8px;border-radius:4px;color:var(--accent)}
+
+/* Footer */
+.footer{text-align:center;padding:2rem;color:var(--muted);font-size:.8rem;border-top:1px solid var(--border);margin-top:2rem}
+
+/* Responsive */
+@media(max-width:768px){
+  .hero h1{font-size:1.6rem}
+  .overview-grid{grid-template-columns:1fr}
+  .flow-steps{flex-direction:column;align-items:stretch}
+  .flow-arrow{transform:rotate(90deg);text-align:center}
+}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+
+/* Common fields highlight */
+.common-badge{font-size:.65rem;padding:2px 6px;border-radius:3px;background:rgba(129,140,248,.1);color:var(--accent2);margin-left:6px;font-weight:600}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Integração por Arquivo — Layouts de Cadastro</h1>
+  <p>Documentação técnica dos schemas JSON para integração de cadastros via arquivo (S3 / diretório local). Todos os 7 layouts do fluxo completo de cadastro de produto.</p>
+  <div style="margin-top:1rem">
+    <span class="badge badge-info">7 Layouts</span>
+    <span class="badge badge-info">JSON / JSONL</span>
+    <span class="badge badge-warn">Ordem de execução obrigatória</span>
+  </div>
+</div>
+
+<nav class="nav-bar"><div class="nav-inner" id="nav"></div></nav>
+
+<div class="container">
+  <!-- General info -->
+  <div class="section-card" id="sec-geral">
+    <div class="section-header"><div class="step-badge" style="background:linear-gradient(135deg,var(--green),#059669)">i</div><div><h2>Informações Gerais</h2><div class="meta">Convenções e fluxo de processamento</div></div></div>
+    <div class="section-body">
+      <div class="sub-title">Nomenclatura do Arquivo</div>
+      <div class="naming-box">
+        <p>Cada arquivo deve seguir o padrão: <code>&lt;layout&gt;_&lt;timestamp&gt;.json</code></p>
+        <p style="margin-top:.5rem;font-size:.85rem;color:var(--muted)">Onde <code>&lt;layout&gt;</code> é o nome do layout (plural) e <code>&lt;timestamp&gt;</code> segue o formato <code>yyyyMMddHHmmssSSS</code> (17 dígitos).</p>
+        <p style="margin-top:.5rem;font-size:.85rem;color:var(--muted)">Formatos suportados: <code>.json</code> (array), <code>.jsonl</code> (uma linha por registro), <code>.json.gz</code> e <code>.jsonl.gz</code> (comprimidos).</p>
+        <p style="margin-top:.8rem;font-size:.82rem">Exemplos: <code>categories_20260514114401000.json</code>, <code>products_20260514114403000.jsonl.gz</code></p>
+      </div>
+
+      <div class="sub-title">Estrutura de Pastas (S3)</div>
+      <div class="code-block"><pre>bucket/
+├── incoming/     ← Depositar arquivos aqui
+├── processing/   ← Em processamento (gerenciado pelo sistema)
+├── processed/    ← Processados com sucesso
+├── error/        ← Processados com erro
+└── reports/      ← Relatórios JSON de cada processamento</pre></div>
+
+      <div class="sub-title">Ordem de Execução</div>
+      <div class="flow-steps" id="flow"></div>
+
+      <div class="sub-title">Campos Comuns (presentes em todos os layouts)</div>
+      <table class="field-table"><thead><tr><th>Campo</th><th>Tipo</th><th>Descrição</th><th>Valores</th></tr></thead><tbody id="common-fields"></tbody></table>
+
+      <div class="sub-title">Campos de Controle (gerenciados pelo sistema — NÃO enviar)</div>
+      <p style="font-size:.85rem;color:var(--muted);margin-bottom:.5rem">Os campos abaixo são gerenciados internamente. Se enviados, serão ignorados/sobrescritos.</p>
+      <div style="font-family:var(--mono);font-size:.8rem;color:var(--muted);background:var(--surface2);padding:.8rem 1rem;border-radius:8px">
+        procDate, registrationErrorDescription, executionKey, processStatus1..10, procDate1..10, message1..10
+      </div>
+    </div>
+  </div>
+
+  <!-- Dynamic layout sections -->
+  <div id="layouts"></div>
+</div>
+
+<div class="footer">
+  <p>Integration Service — Documentação de Integração por Arquivo</p>
+  <p style="margin-top:.3rem">Gerado em <span id="gen-date"></span></p>
+</div>
+
+<script src="layout-data.js"></script>
+<script>
+document.getElementById('gen-date').textContent = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
+
+// Nav
+const nav = document.getElementById('nav');
+nav.innerHTML = '<button class="nav-btn active" onclick="scrollTo_(\'sec-geral\')">Geral</button>' +
+  LAYOUTS.map(l => `<button class="nav-btn" onclick="scrollTo_('sec-${l.id}')">${l.order}. ${l.title}</button>`).join('');
+
+function scrollTo_(id){
+  document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'});
+  document.querySelectorAll('.nav-btn').forEach((b,i)=>{
+    b.classList.toggle('active', b.textContent.includes(id==='sec-geral'?'Geral':LAYOUTS.find(l=>'sec-'+l.id===id)?.title||''));
+  });
+}
+
+// Intersection observer for nav
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const id = e.target.id;
+      document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+      const t = id==='sec-geral'?'Geral':LAYOUTS.find(l=>'sec-'+l.id===id)?.title;
+      document.querySelectorAll('.nav-btn').forEach(b=>{if(b.textContent.includes(t))b.classList.add('active')});
+    }
+  });
+},{threshold:0.2});
+
+document.querySelectorAll('[id^="sec-"]').forEach(el=>obs.observe(el));
+
+// Flow
+document.getElementById('flow').innerHTML = LAYOUTS.map((l,i) =>
+  `<div class="flow-step"><span class="fnum">Etapa ${l.order}</span>${l.id}</div>${i<LAYOUTS.length-1?'<span class="flow-arrow">→</span>':''}`
+).join('');
+
+// Common fields
+document.getElementById('common-fields').innerHTML = COMMON_FIELDS.map(f => {
+  let valHtml = '';
+  if(f.vals) valHtml = '<ul class="val-list">'+Object.entries(f.vals).map(([k,v])=>`<li><code>${k}</code> — ${v}</li>`).join('')+'</ul>';
+  if(f.ex) valHtml += `<span style="font-size:.78rem;color:var(--muted)">Ex: ${f.ex}</span>`;
+  return `<tr><td class="fname">${f.n}</td><td class="ftype">${f.t}</td><td>${f.d}</td><td>${valHtml}</td></tr>`;
+}).join('');
+
+// Layouts
+document.getElementById('layouts').innerHTML = LAYOUTS.map(l => {
+  const prereqHtml = l.prereqs.length
+    ? `<div class="prereq-list">${l.prereqs.map(p=>`<span class="prereq-chip">Requer: ${p}</span>`).join('')}</div>`
+    : '';
+
+  const overviewHtml = `<div class="overview-grid">
+    <div class="ov-item"><div class="ov-label">API Equivalente</div><div class="ov-value">${l.api}</div></div>
+    <div class="ov-item"><div class="ov-label">Tabela P2K</div><div class="ov-value">${l.table}</div></div>
+    <div class="ov-item"><div class="ov-label">Chave Primária</div><div class="ov-value">${l.pk}</div></div>
+    <div class="ov-item"><div class="ov-label">Arquivo</div><div class="ov-value">${l.id}_*.json</div></div>
+  </div>`;
+
+  const fieldsHtml = renderFieldTable('Campos Obrigatórios para Envio', l.fields, true);
+  const optHtml = l.optionalFields ? renderFieldTable('Campos Opcionais Relevantes', l.optionalFields, false) : '';
+
+  const exampleHtml = `<div class="sub-title">Exemplo JSON</div>
+    <div class="code-block"><button class="copy-btn" onclick="copyCode(this)">Copiar</button><pre>${JSON.stringify(l.example, null, 2)}</pre></div>`;
+
+  const rulesHtml = `<div class="sub-title">Regras de Negócio</div>
+    <ul class="rules-list">${l.rules.map(r=>`<li>${r}</li>`).join('')}</ul>`;
+
+  return `<div class="section-card" id="sec-${l.id}">
+    <div class="section-header">
+      <div class="step-badge">${l.order}</div>
+      <div><h2>${l.title}</h2><div class="meta">${l.desc}</div></div>
+    </div>
+    <div class="section-body">
+      ${prereqHtml}${overviewHtml}${fieldsHtml}${optHtml}
+      <p style="font-size:.8rem;color:var(--muted);margin-bottom:1rem">Além dos campos acima, incluir os <strong>campos comuns</strong> (operationType, registrationStatus, inclusionDate) em cada registro.</p>
+      ${exampleHtml}${rulesHtml}
+    </div>
+  </div>`;
+}).join('');
+
+// Re-observe
+document.querySelectorAll('[id^="sec-"]').forEach(el=>obs.observe(el));
+
+function renderFieldTable(title, fields, required) {
+  return `<div class="sub-title">${title}</div>
+  <div style="overflow-x:auto"><table class="field-table"><thead><tr><th>Campo</th><th>Tipo</th>${required?'<th>Obrig.</th>':''}<th>Descrição</th><th>Valores / Exemplo</th></tr></thead><tbody>
+  ${fields.map(f => {
+    let valHtml = '';
+    if(f.vals) valHtml = '<ul class="val-list">'+Object.entries(f.vals).map(([k,v])=>`<li><code>${k}</code> — ${v}</li>`).join('')+'</ul>';
+    if(f.ex) valHtml += `<span style="font-size:.78rem;color:var(--muted)">Ex: ${f.ex}</span>`;
+    const reqCol = required ? `<td><span class="freq ${f.r?'freq-y':'freq-n'}">${f.r?'Sim':'Não'}</span></td>` : '';
+    return `<tr><td class="fname">${f.n}</td><td class="ftype">${f.t}</td>${reqCol}<td>${f.d}</td><td>${valHtml}</td></tr>`;
+  }).join('')}
+  </tbody></table></div>`;
+}
+
+function copyCode(btn){
+  const code = btn.parentElement.querySelector('pre').textContent;
+  navigator.clipboard.writeText(code).then(()=>{btn.textContent='Copiado!';setTimeout(()=>btn.textContent='Copiar',1500)});
+}
+</script>
+</body>
+</html>
